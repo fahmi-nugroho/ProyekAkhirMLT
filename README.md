@@ -168,6 +168,8 @@ Hasil Evaluasi Collaborative Filtering
 
 ![Evaluasi Collaborative Filtering](https://github.com/fahmi-nugroho/ProyekAkhirMLT/blob/main/hasil2.png?raw=true)
 
+Jika dilihat dari hasi evaluasi diatas, terlihat bahwa model dengan algoritma Collaborative Filtering yang saya buat masih belum optimal karena jika digunakan untuk rekomendasi masih ada kategori tempat wisata yang tidak sesuai dengan user, sedangkan model dengan algoritma Content Based Filtering yang saya buat menunjukkan hasil precision 1.0 yang berarti rekomendasi yang dihasilkan model sesuai dengan tempat wisata yang dimasukkan user.
+
 # Referensi
 * Aprilia Saptu Ningrum, Heru Cahya Rustamaji, dan Yuli Fauziah, "Content Based dan Collavorative Filtering Pada Rekomendasi Tujuan Pariwisata di Daerah Yogyakarta", TELEMATIKA, Vol. 16, No.1, 2019, doi: [10.31315/telematika.v16i1.3023](https://doi.org/10.31315/telematika.v16i1.3023).
 * Mufidatul Islamiyah, Puji Subekti, dan Titania Dwi Andini, "Pemanfaatan Metode Item Based Collaborative Filtering Untuk Rekomendasi Wisata Di Kabupaten Malang", Jurnal Ilmiah Teknologi Informasi Asia Vol.13, No. 2, 2019, doi: [10.32815/jitika.v13i2.70](https://doi.org/10.32815/jitika.v13i2.70).
