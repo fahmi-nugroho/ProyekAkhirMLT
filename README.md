@@ -48,12 +48,12 @@ Data rating tempat wisata
 ## Data Preparation
 * Menggabungkan data tourism_with_id.csv dan tourism_rating.csv berdasarkan fitur Place_Id
 Penggabungan data dilakukan agar kita bisa mengetahui berapa rating yang diberikan oleh masing-masing orang kepada tempat wisata tertentu, misalnya user 1 memberikan rating sekian kepada tempat wisata A.
-    ```
+    ``` python
     tourisms_info = pd.merge(ratings, tourisms , on='Place_Id', how='left')
     ```
 * Menyeleksi data yang akan digunakan
 Tidak semua fitur yang ada pada file csv akan digunakan, karena pada file csv ada beberapa data yang tidak lengkap atau tidak akan digunakan dalam membuat model. Pada kasus ini saya menghapus kolom 'Time_Minutes', 'Coordinate', 'Lat', 'Long', dan index yang undifined. Lalu mengecek apakah ada data yang kosong pada data yang sudah kita bersihkan, pada kasus ini data yang sudah saya bersihkan tidak mengandung nilai null, jadi tidak perlu proses drop lagi. Setelah semua data terbebas dari nilai null maka data yang duplikat juga akan di hilangkan.
-    ```
+    ``` python
     # Kode untuk menghapus beberapa kolom yang tidak digunakan
     tourisms_info.drop(['Time_Minutes', 'Coordinate', 'Lat', 'Long', tourisms_info.columns[-1], tourisms_info.columns[-2]], axis='columns', inplace=True)
     # Kode untuk memeriksa apakah ada nilai null atau tidak
@@ -62,7 +62,7 @@ Tidak semua fitur yang ada pada file csv akan digunakan, karena pada file csv ad
     preparation = fix_tourisms.drop_duplicates('Place_Id')
     ```
 * Mengonversi data series Place_Id, Place_Name, dan Category menjadi list dan menjadikanya satu dataframe
-    ```
+    ``` python
     # Mengonversi data series ‘Place_Id’ menjadi dalam bentuk list
     place_id = preparation['Place_Id'].tolist()
      
@@ -79,7 +79,7 @@ Tidak semua fitur yang ada pada file csv akan digunakan, karena pada file csv ad
     })
     ```
 * Melakukan encoding untuk User_Id
-    ```
+    ``` python
     # Mengubah User_Id menjadi list tanpa nilai yang sama
     user_ids = df['User_Id'].unique().tolist()
     print('list User_Id: ', user_ids)
@@ -93,7 +93,7 @@ Tidak semua fitur yang ada pada file csv akan digunakan, karena pada file csv ad
     print('encoded angka ke User_Id: ', user_encoded_to_user)
     ```
 * Melakukan encoding untuk Place_Id
-    ```
+    ``` python
     # Mengubah Place_Id menjadi list tanpa nilai yang sama
     tourisms_ids = df['Place_Id'].unique().tolist()
      
@@ -105,7 +105,7 @@ Tidak semua fitur yang ada pada file csv akan digunakan, karena pada file csv ad
     ```
 * Melakukan pembagian data untuk training dan validasi
 Dengan melakukan pembagian dataset kita dapat menilai bagaimana performa yang dihasilkan model kita ketika bertemu data-data yang belum pernah dilihat pada proses latihan sebelumnya.
-    ```
+    ``` python
     # Mengacak dataset
     df = df.sample(frac=1, random_state=42)
     # Membuat variabel x untuk mencocokkan data user dan resto menjadi satu value
@@ -134,61 +134,39 @@ Pada teknik ini produk/item atribut yang dijadikan sebagai referensi kesamaan un
 * Collaborative Filtering.
     Pada collaborative filtering attribut yang digunakan bukan konten tetapi user behaviour. contohnya kita merekomendasikan suatu item berdasarkan dari riwayat rating dari user tersebut maupun user lain. Untuk melakukan rekomendasi dapat menggunakan item-based maupun user-based. Pada item based kita berangkat dari item sebagai bari dan user sebagai kolom, kemudian hitung similaritynya setalah mendapat nilai similarit kita sorting descending, nah disini kita bisa improvisasi dengan melakukan filter pada film-film yang sudah pernah ditonton. lalu kita dapat memilih Top N rekomendasi.
 
-    Satu-satunya masalah dengan metode ini adalah bahwa prediksi model untuk pengguna tertentu, pasangan item adalah produk titik dari penyematan yang sesuai. Jadi, jika suatu item tidak terlihat selama pelatihan, sistem umumnya tidak dapat membuat embedding untuk itu dan karenanya tidak dapat mengkueri model dengan item ini. Masalah ini dikenal sebagai masalah mulai dingin.
-    
-    Dibawah ini adalah kode yang saya gunakan untuk membuat model Random Forest.
-    ```python
-    RF = RandomForestClassifier()
-    RF.fit(X_train, y_train)
-    y_pred_RF=RF.predict(X_test)
+    Satu-satunya masalah dengan metode ini adalah bahwa prediksi model untuk pengguna tertentu, pasangan item adalah produk titik dari penyematan yang sesuai. Jadi, jika suatu item tidak terlihat selama pelatihan, sistem umumnya tidak dapat membuat embedding untuk itu dan karenanya tidak dapat mengkueri model dengan item ini. Masalah ini dikenal sebagai masalah (Cold Start).
 
 ## Evaluation
-Untuk menilai performa model saya menggunakan tiga metrik evaluasi. Saya memilih ketiga metrik dibawah karena masalah yang saya selesaikan merupakan masalah klasifikasi.
-* Confussion Matrix
-Confusion matrix juga sering disebut error matrix. Pada dasarnya confusion matrix memberikan informasi perbandingan hasil klasifikasi yang dilakukan oleh sistem (model) dengan hasil klasifikasi sebenarnya. Confusion matrix berbentuk tabel matriks yang menggambarkan kinerja model klasifikasi pada serangkaian data uji yang nilai sebenarnya diketahui.
+Untuk menilai performa model saya menggunakan dua metrik evaluasi. Saya memilih dua metrik dibawah karena saya memnggunakan dua algoritma yang berbeda, sehingga diperlukan dua metrik evaluasi yang berbeda pula.
+* Precission
+Precission adalah kemampuan pengklasifikasi untuk tidak melabeli instance positif yang sebenarnya negatif. Untuk setiap kelas, itu didefinisikan sebagai rasio positif benar dengan jumlah positif benar dan positif palsu.
+![Precission](https://github.com/fahmi-nugroho/ProyekAkhirMLT/blob/main/eval1.png?raw=true)
+* Root Mean Square Error (RMSE)
+Pengertian Root Mean Square Error (RMSE) adalah  metode pengukuran dengan mengukur perbedaan nilai dari prediksi sebuah model sebagai estimasi atas nilai yang diobservasi. Root Mean Square Error adalah hasil dari akar kuadrat Mean Square Error. Keakuratan metode estimasi kesalahan pengukuran ditandai dengan adanya nilai RMSE yang kecil
+![RMSE](https://github.com/fahmi-nugroho/ProyekAkhirMLT/blob/main/eval2.png?raw=true)
 
-![Tabel Confussion Matrix](https://github.com/fahmi-nugroho/gambar/blob/main/confussionmatrix.png?raw=true)
-* Classfication Report
-    * Precission
-Precission adalah kemampuan pengklasifikasi untuk tidak melabeli instance positif yang sebenarnya negatif. Untuk setiap kelas, itu didefinisikan sebagai rasio positif benar dengan jumlah positif benar dan positif palsu. ![Precission](https://github.com/fahmi-nugroho/gambar/blob/main/precision.png?raw=true)
-    * Recall
-Recall adalah kemampuan classifier untuk menemukan semua instance positif. Untuk setiap kelas itu didefinisikan sebagai rasio positif benar dengan jumlah positif benar dan negatif palsu. ![Precission](https://github.com/fahmi-nugroho/gambar/blob/main/recall.png?raw=true)
-    * F1 Score
-F1 Score adalah rata-rata harmonik tertimbang dari presisi dan daya ingat sehingga skor terbaik adalah 1,0 dan yang terburuk adalah 0,0. F1 Score lebih rendah dari ukuran akurasi karena mereka menanamkan presisi dan mengingat ke dalam perhitungan mereka. Sebagai aturan praktis, rata-rata tertimbang F1 harus digunakan untuk membandingkan model pengklasifikasi, bukan akurasi global. ![Precission](https://github.com/fahmi-nugroho/gambar/blob/main/f1.png?raw=true)
-    * Support
-Support adalah jumlah kemunculan aktual kelas dalam kumpulan data yang ditentukan. Support yang tidak seimbang dalam data pelatihan dapat menunjukkan kelemahan struktural dalam skor pengklasifikasi yang dilaporkan dan dapat menunjukkan perlunya pengambilan sampel bertingkat atau penyeimbangan kembali. Support tidak berubah antar model melainkan mendiagnosis proses evaluasi.
-* Accuracy Score
+Penerapan dalam kode:
+``` python
+# menghitung precission
+TP = len(hasil[hasil.category == kategori_rekomendasi])
+FP = len(hasil[hasil.category != kategori_rekomendasi])
 
-![Accuracy](https://github.com/fahmi-nugroho/gambar/blob/main/accuracy.png?raw=true)
+Precision = TP / (TP+FP)
+# menggunakan RMSE untuk model yang saya buat
+model.compile(
+    loss = tf.keras.losses.BinaryCrossentropy(),
+    optimizer = keras.optimizers.Adam(learning_rate=0.001),
+    metrics=[tf.keras.metrics.RootMeanSquaredError()]
+)
+```
 
-Kode yang saya gunakan untuk mengevaluasi model:
+Hasil Evaluasi Content Based Filtering
 
-    ```python
-    print('==================== K-Nearest Neighbor ====================')
-    
-    print('=> Confusion Matrix')
-    print(confusion_matrix(y_test,y_pred_knn))
-    print('=> Classification Report')
-    print(classification_report(y_test,y_pred_knn))
-    print('=> Accuracy Score')
-    print(accuracy_score(y_test, y_pred_knn))
-    
-    print('\n\n\n==================== Random Forest ====================')
-    print('=> Confusion Matrix')
-    print(confusion_matrix(y_test,y_pred_RF))
-    print('=> Classification Report')
-    print(classification_report(y_test,y_pred_RF))
-    print('=> Accuracy Score')
-    print(accuracy_score(y_test, y_pred_RF))
-    ```
+![Evaluasi Content Based Filtering](https://github.com/fahmi-nugroho/ProyekAkhirMLT/blob/main/hasil1.png?raw=true)
 
-Hasil Evaluasi K-Nearest Neighbor
+Hasil Evaluasi Collaborative Filtering
 
-![Evaluasi KNN](https://github.com/fahmi-nugroho/gambar/blob/main/gambar5.png?raw=true)
-
-Hasil Evaluasi Random Forest
-
-![Evaluasi RF](https://github.com/fahmi-nugroho/gambar/blob/main/gambar6.png?raw=true)
+![Evaluasi Collaborative Filtering](https://github.com/fahmi-nugroho/ProyekAkhirMLT/blob/main/hasil2.png?raw=true)
 
 # Referensi
 * Aprilia Saptu Ningrum, Heru Cahya Rustamaji, dan Yuli Fauziah, "Content Based dan Collavorative Filtering Pada Rekomendasi Tujuan Pariwisata di Daerah Yogyakarta", TELEMATIKA, Vol. 16, No.1, 2019, doi: [10.31315/telematika.v16i1.3023](https://doi.org/10.31315/telematika.v16i1.3023).
